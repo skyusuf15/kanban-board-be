@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ColumnController;
+use App\Http\Controllers\DownloadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,3 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResource('column', ColumnController::class);
 Route::apiResource('card', CardController::class);
+
+Route::put('update/all_data', [CardController::class, 'updateAll']);
+
+Route::get('download/query', [DownloadController::class, 'index']);

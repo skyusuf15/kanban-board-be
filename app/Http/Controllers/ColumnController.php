@@ -10,7 +10,13 @@ use Illuminate\Validation\ValidationException;
 
 class ColumnController extends Controller
 {
-    public function __construct(private ColumnRepository $repository) {}
+    /**
+     * ColumnController constructor.
+     * @param ColumnRepository $repository
+     */
+    public function __construct(private ColumnRepository $repository)
+    {
+    }
 
     /**
      * Display a listing of the resource.

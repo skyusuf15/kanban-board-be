@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Repository\CardRepository;
 use App\Repository\ColumnRepository;
+use App\Services\CardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -11,7 +12,15 @@ use Illuminate\Validation\ValidationException;
 
 class CardController extends Controller
 {
-    public function __construct(private ColumnRepository $columnRepository, private CardRepository $cardRepository) {}
+    /**
+     * CardController constructor.
+     * @param ColumnRepository $columnRepository
+     * @param CardRepository $cardRepository
+     * @param CardService $cardService
+     */
+    public function __construct(private ColumnRepository $columnRepository, private CardRepository $cardRepository, private CardService $cardService)
+    {
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -76,5 +85,23 @@ class CardController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @throws ValidationException
+     */
+    public function updateAll(Request $request)
+    {
+        $this->validate($request, [
+            'columns' => 'required|array',
+            'columns.*.title' => 'required|string',
+            'columns.*.slug' => 'required|string',
+            'columns.*.cards' => 'array',
+        ]);
+
+        return $this->sendSuccess($this->cardService->updateCard($request->input('columns')));
     }
 }

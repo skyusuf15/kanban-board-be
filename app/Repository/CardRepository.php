@@ -42,15 +42,11 @@ class CardRepository
 
     /**
      * @param Card $card
-     * @param array $payload
-     * @return Card
+     * @return bool
      */
-    public function update(Card $card, array $payload): Card
+    public function update(Card $card): bool
     {
-        isset($payload['title']) && $card->title = $payload['title'];
-        isset($payload['description']) && $card->description = $payload['description'];
-        $card->save();
-        return $card;
+        return $card->save();
     }
 
     /**
