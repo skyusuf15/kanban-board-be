@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -35,7 +37,31 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
+        });
+
+        $this->renderable(function (Throwable $throwable, Request $request) {
+            $statusCode = 500;
+            switch ($throwable::class) {
+                case ValidationException::class:
+                    $statusCode = 400;
+                    $error = [
+                        'message' => 'Invalid parameters supplied.',
+                        'code' => $statusCode,
+                        'data' => $throwable->errors()
+                    ];
+                    break;
+                default:
+                    $error = [
+                        'status' => 'error',
+                        'message' => $throwable->getMessage(),
+                        'code' => $statusCode,
+                    ];
+            }
+
+            $error['exception_message'] = $throwable->getMessage();
+            $error['trace'] = $throwable->getTraceAsString();
+
+            return response()->json($error)->setStatusCode($statusCode);
         });
     }
 }

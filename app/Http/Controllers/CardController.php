@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Repository\CardRepository;
 use App\Repository\ColumnRepository;
 use App\Services\CardService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -25,7 +26,7 @@ class CardController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @return JsonResponse
      * @throws ValidationException
      */
@@ -34,7 +35,7 @@ class CardController extends Controller
         $this->validate($request, [
             'title' => 'required|string',
             'description' => 'string|nullable',
-            'column_id' => 'required|numeric'
+            'column_id' => 'required|numeric|exists:columns,id'
         ]);
 
         $column = $this->columnRepository->findById($request->input('column_id'));
@@ -43,57 +44,30 @@ class CardController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return Response
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse
+     * @throws ValidationException
+     * @throws Exception
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): JsonResponse
     {
-        //
-    }
+        $this->validate($request, [
+            'title' => 'nullable|string',
+            'description' => 'nullable|string',
+        ]);
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
+        return $this->sendSuccess($this->cardService->updateCard(id: $id, title: $request->input('title'), description: $request->input('description')));
     }
-
 
     /**
      * @param Request $request
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function updateAll(Request $request)
+    public function updateCardsColumn(Request $request): JsonResponse
     {
         $this->validate($request, [
             'columns' => 'required|array',
@@ -102,6 +76,6 @@ class CardController extends Controller
             'columns.*.cards' => 'array',
         ]);
 
-        return $this->sendSuccess($this->cardService->updateCard($request->input('columns')));
+        return $this->sendSuccess($this->cardService->updateCardsColumn($request->input('columns')));
     }
 }

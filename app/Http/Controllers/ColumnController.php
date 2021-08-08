@@ -28,7 +28,6 @@ class ColumnController extends Controller
         return $this->sendSuccess($this->repository->getColumnWithCards());
     }
 
-
     /**
      * @param Request $request
      * @return JsonResponse

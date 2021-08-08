@@ -17,9 +17,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::apiResource('column', ColumnController::class);
-Route::apiResource('card', CardController::class);
 
-Route::put('update/all_data', [CardController::class, 'updateAll']);
+Route::get('column', [ColumnController::class, 'index']);
+Route::post('column', [ColumnController::class, 'store']);
+Route::delete('column/{id}', [ColumnController::class, 'destroy']);
+
+Route::post('card', [CardController::class, 'store']);
+Route::put('card/{id}', [CardController::class, 'update']);
+Route::put('update/all_data', [CardController::class, 'updateCardsColumn']);
 
 Route::get('download/query', [DownloadController::class, 'index']);

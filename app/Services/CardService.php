@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Card;
 use App\Repository\CardRepository;
 
 class CardService
@@ -18,7 +19,7 @@ class CardService
      * @param array $payload
      * @return bool
      */
-    public function updateCard(array $payload): bool
+    public function updateCardsColumn(array $payload): bool
     {
         foreach ($payload as $column) {
             if (count($column["cards"]) < 1) {
@@ -36,5 +37,25 @@ class CardService
             }
         }
         return false;
+    }
+
+    /**
+     * @param int $id
+     * @param string|null $title
+     * @param string|null $description
+     * @return Card
+     * @throws \Exception
+     */
+    public function updateCard(int $id, string $title = null, string $description = null): Card
+    {
+        $card = $this->cardRepository->findById($id);
+        $title && $card->title = $title;
+        $description && $card->description = $description;
+
+        if ($this->cardRepository->update($card)) {
+            return $card;
+        }
+
+        throw new \Exception('Failed to update Card!');
     }
 }
